@@ -1,4 +1,4 @@
-import { generate, geminiModel } from "./gemini";
+import { generateDetailed, geminiModel } from "./gemini";
 import type {
   Confidence,
   Criterion,
@@ -157,20 +157,23 @@ export async function evaluate(args: {
     buildTranscript(args.messages, args.personaName),
   );
 
-  // 형식이 어긋나면 1회 재시도합니다.
+  // 형식이 어긋나면 1회 재시도합니다. (Vercel 함수 제한 60초를 넘기지 않도록 시간을 확인합니다.)
+  const startedAt = Date.now();
   let lastError = "";
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
-      const raw = await generate({
+      const result = await generateDetailed({
         system: SYSTEM,
         contents: [{ role: "user", parts: [{ text: userPrompt }] }],
         temperature: 0.1,
         json: true,
+        timeoutMs: 25000,
       });
-      const parsed = parseEvaluation(raw, args.rubric, studentTurns);
-      return { ok: true, ...parsed, model, prompt_version: PROMPT_VERSION };
+      const parsed = parseEvaluation(result.text, args.rubric, studentTurns);
+      return { ok: true, ...parsed, model: result.model, prompt_version: PROMPT_VERSION };
     } catch (e) {
       lastError = e instanceof Error ? e.message : String(e);
+      if (Date.now() - startedAt > 30000) break;
     }
   }
   return { ok: false, error: lastError, model, prompt_version: PROMPT_VERSION };

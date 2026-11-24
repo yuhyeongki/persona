@@ -47,6 +47,7 @@ supabase/migrations/0001_init.sql   테이블 4개 + RLS
 
 [Google AI Studio](https://aistudio.google.com/apikey) 에서 API 키를 발급해 `GEMINI_API_KEY` 로 씁니다.
 모델 이름은 `GEMINI_MODEL` 로 바꿀 수 있고, 생략하면 `gemini-3.8-flash` 를 씁니다.
+기본 모델이 혼잡(503)하거나 한도(429), 20초 이상 무응답일 때는 `GEMINI_FALLBACK_MODEL`(기본 `gemini-3.5-flash-lite`)로 자동 전환합니다. 빈 값으로 두면 전환하지 않습니다.
 
 ### 3. 내 컴퓨터에서 먼저 실행해 보기
 

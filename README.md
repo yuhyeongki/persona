@@ -46,7 +46,7 @@ supabase/migrations/0001_init.sql   테이블 4개 + RLS
 ### 2. Gemini API 키
 
 [Google AI Studio](https://aistudio.google.com/apikey) 에서 API 키를 발급해 `GEMINI_API_KEY` 로 씁니다.
-모델 이름은 `GEMINI_MODEL` 로 바꿀 수 있고, 생략하면 `gemini-2.5-flash` 를 씁니다.
+모델 이름은 `GEMINI_MODEL` 로 바꿀 수 있고, 생략하면 `gemini-3.8-flash` 를 씁니다.
 
 ### 3. 내 컴퓨터에서 먼저 실행해 보기
 

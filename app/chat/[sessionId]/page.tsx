@@ -1,4 +1,5 @@
 import { notFound, redirect } from "next/navigation";
+import Orbit from "@/components/Orbit";
 import { db } from "@/lib/supabase";
 import { isUuid } from "@/lib/util";
 import { getPersona } from "@/lib/personas";
@@ -37,7 +38,10 @@ export default async function ChatPage({
   const persona = getPersona(activity.persona_key);
 
   return (
-    <main className="wrap">
+    <>
+    <div className="mist" />
+    <Orbit />
+    <main className="wrap night">
       <ChatClient
         sessionId={sessionId}
         title={activity.title}
@@ -50,5 +54,6 @@ export default async function ChatPage({
         }))}
       />
     </main>
+    </>
   );
 }

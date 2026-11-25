@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Orbit from "@/components/Orbit";
 
 export default function JoinPage() {
   const router = useRouter();
@@ -32,12 +33,15 @@ export default function JoinPage() {
   }
 
   return (
-    <main className="wrap">
-      <div className="center" style={{ marginTop: 40 }}>
-        <h1>인물 대화 탐구</h1>
-        <p className="muted">선생님이 알려 준 접속 코드로 입장하세요.</p>
+    <>
+    <div className="mist" />
+    <Orbit />
+    <main className="wrap night hero">
+      <div className="center">
+        <h1>케플러에게 직접 물어보세요</h1>
+        <p className="lead">정답보다 어떤 질문을 하는지가 중요해요. 코드를 입력하면 바로 대화가 시작돼요.</p>
       </div>
-      <form className="card" onSubmit={onSubmit} style={{ marginTop: 24 }}>
+      <form className="join-card" onSubmit={onSubmit}>
         <label htmlFor="code">접속 코드</label>
         <input
           id="code"
@@ -63,9 +67,10 @@ export default function JoinPage() {
           </button>
         </div>
       </form>
-      <p className="center small muted" style={{ marginTop: 24 }}>
+      <p className="center small muted hero-foot">
         <Link href="/teacher">교사 페이지</Link>
       </p>
     </main>
+    </>
   );
 }

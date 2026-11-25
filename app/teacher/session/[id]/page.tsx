@@ -5,6 +5,7 @@ import { requireTeacher } from "@/lib/teacher-auth";
 import { formatKst, isUuid } from "@/lib/util";
 import { getPersona } from "@/lib/personas";
 import EvaluationView from "@/components/EvaluationView";
+import { EvaluateNowButton } from "../../components";
 import type { Activity, EvaluationRow, MessageRow, SessionRow } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -64,8 +65,10 @@ export default async function TeacherSessionPage({ params }: { params: Promise<{
           messages={messages}
           teacher
         />
+      ) : session.call_count >= 1 ? (
+        <EvaluateNowButton sessionId={id} />
       ) : (
-        <p className="muted">아직 평가 결과가 없습니다.</p>
+        <p className="muted">질문이 없어 평가할 수 없습니다.</p>
       )}
       {failures.length > 0 && (
         <p className="small error">

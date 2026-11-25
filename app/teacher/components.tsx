@@ -119,3 +119,45 @@ export function NewActivityForm({ defaultGoals }: { defaultGoals: string }) {
     </form>
   );
 }
+
+/** 학생이 대화를 마치지 않고 나간 경우, 교사가 대신 대화를 끝내고 평가를 실행합니다. */
+export function EvaluateNowButton({ sessionId }: { sessionId: string }) {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  async function run() {
+    if (loading) return;
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch("/api/end", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error ?? "평가에 실패했습니다.");
+      router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "평가에 실패했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="card">
+      <p>
+        아직 평가 결과가 없습니다. 학생이 대화를 마치지 않고 나갔다면 여기서 대신 평가할 수 있습니다.
+        실행하면 이 대화는 종료되고 학생은 더 이상 이어서 대화할 수 없습니다.
+      </p>
+      {error && <div className="error">{error}</div>}
+      <div style={{ marginTop: 10 }}>
+        <button type="button" onClick={run} disabled={loading}>
+          {loading ? "평가 중... (10~20초)" : "지금 평가하기"}
+        </button>
+      </div>
+    </div>
+  );
+}

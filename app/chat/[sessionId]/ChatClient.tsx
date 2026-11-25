@@ -20,6 +20,7 @@ export default function ChatClient(props: {
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
+  const [confirming, setConfirming] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -63,13 +64,7 @@ export default function ChatClient(props: {
   }
 
   function finish() {
-    if (used < 1) {
-      setError("한 번 이상 질문한 뒤에 마칠 수 있어요.");
-      return;
-    }
-    if (window.confirm("대화를 마치고 평가를 받을까요? 마친 뒤에는 이어서 대화할 수 없어요.")) {
-      router.push(`/result/${props.sessionId}`);
-    }
+    router.push(`/result/${props.sessionId}`);
   }
 
   const remaining = props.maxTurns - used;
@@ -81,6 +76,9 @@ export default function ChatClient(props: {
           <div>
             <h1 style={{ fontSize: "1.15rem" }}>{props.title}</h1>
             <div className="muted small">{props.personaName}와 대화 중</div>
+            <div className="muted small">
+              질문을 다 쓰지 않아도 &apos;대화 마치기&apos;로 언제든 끝내고 평가받을 수 있어요.
+            </div>
           </div>
           <div className="badge">남은 질문 {remaining}회</div>
         </div>
@@ -98,6 +96,19 @@ export default function ChatClient(props: {
       </div>
 
       <div className="composer">
+        {confirming && (
+          <div className="notice">
+            <p>대화를 마치고 평가를 받을까요? 마친 뒤에는 이어서 대화할 수 없어요.</p>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button type="button" onClick={finish}>
+                마치고 평가받기
+              </button>
+              <button className="ghost" type="button" onClick={() => setConfirming(false)}>
+                계속 대화하기
+              </button>
+            </div>
+          </div>
+        )}
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
@@ -108,12 +119,22 @@ export default function ChatClient(props: {
           disabled={sending}
         />
         {error && <div className="error">{error}</div>}
+        {used < 1 && (
+          <div className="muted small" style={{ marginTop: 6 }}>
+            질문을 한 번 이상 하면 대화를 마칠 수 있어요.
+          </div>
+        )}
         <div className="actions">
           <span className="muted small">
             {text.length} / {MAX_CHARS}
           </span>
           <div style={{ display: "flex", gap: 8 }}>
-            <button className="ghost" type="button" onClick={finish} disabled={sending}>
+            <button
+              className="ghost"
+              type="button"
+              onClick={() => setConfirming(true)}
+              disabled={sending || used < 1}
+            >
               대화 마치기
             </button>
             <button type="button" onClick={send} disabled={sending || !text.trim()}>

@@ -34,6 +34,8 @@ export type MessageRow = {
   turn_no: number;
   role: "student" | "persona";
   content: string;
+  /** 페르소나 응답을 만든 모델 (학생 발화이거나 기록 이전 메시지는 null) */
+  model: string | null;
   created_at: string;
 };
 

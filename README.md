@@ -29,6 +29,7 @@ lib/
   gemini.ts                     Gemini 호출
   supabase.ts                   서버 전용 Supabase 클라이언트
 supabase/migrations/0001_init.sql   테이블 4개 + RLS
+  supabase/migrations/0002_message_model.sql   대화 응답 모델 기록 컬럼
 ```
 
 ## 설정 순서
@@ -36,7 +37,7 @@ supabase/migrations/0001_init.sql   테이블 4개 + RLS
 ### 1. Supabase
 
 1. [supabase.com](https://supabase.com) 에서 새 프로젝트를 만듭니다.
-2. 왼쪽 메뉴 **SQL Editor** 에서 `supabase/migrations/0001_init.sql` 의 내용을 통째로 붙여 넣고 **Run** 합니다. (테이블 4개가 생깁니다.)
+2. 왼쪽 메뉴 **SQL Editor** 에서 `supabase/migrations/0001_init.sql` 의 내용을 통째로 붙여 넣고 **Run** 합니다. (테이블 4개가 생깁니다.) 이어서 `0002_message_model.sql` 도 같은 방법으로 실행합니다.
 3. **Project Settings → API** (또는 API Keys) 에서 두 값을 복사해 둡니다.
    - Project URL → `SUPABASE_URL`
    - `service_role` 키 (새 방식의 키 화면에서는 secret 키) → `SUPABASE_SERVICE_ROLE_KEY`

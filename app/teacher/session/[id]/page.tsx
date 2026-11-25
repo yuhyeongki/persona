@@ -81,7 +81,9 @@ export default async function TeacherSessionPage({ params }: { params: Promise<{
             className={`msg ${m.role}${m.role === "student" && cited.has(m.turn_no) ? " hl" : ""}`}
           >
             <div className="who">
-              {m.role === "student" ? `${session.student_label} · 턴 ${m.turn_no}` : persona.name}
+              {m.role === "student"
+                ? `${session.student_label} · 턴 ${m.turn_no}`
+                : `${persona.name}${m.model ? ` · ${m.model}` : ""}`}
             </div>
             {m.content}
           </div>

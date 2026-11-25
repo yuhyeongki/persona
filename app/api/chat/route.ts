@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/supabase";
 import { jsonError } from "@/lib/http";
 import { isUuid } from "@/lib/util";
-import { generate, type GeminiContent } from "@/lib/gemini";
+import { generateDetailed, type GeminiContent } from "@/lib/gemini";
 import { getPersona } from "@/lib/personas";
 import { MAX_CHARS, type Activity, type MessageRow, type SessionRow } from "@/lib/types";
 
@@ -62,8 +62,15 @@ export async function POST(req: Request) {
 
   const persona = getPersona(activity.persona_key);
   let reply: string;
+  let usedModel: string;
   try {
-    reply = await generate({ system: persona.systemPrompt, contents, temperature: 0.7 });
+    const result = await generateDetailed({
+      system: persona.systemPrompt,
+      contents,
+      temperature: 0.7,
+    });
+    reply = result.text;
+    usedModel = result.model;
   } catch (e) {
     console.error("chat generate failed", e);
     // 응답을 못 받았으면 학생 발화를 되돌려 같은 질문을 다시 보낼 수 있게 합니다.
@@ -80,9 +87,14 @@ export async function POST(req: Request) {
     return jsonError("AI 응답을 받지 못했습니다. 다시 보내 주세요.", 502);
   }
 
-  await supabase
-    .from("messages")
-    .insert({ session_id: sessionId, turn_no: turn, role: "persona", content: reply });
+  const personaRow = { session_id: sessionId, turn_no: turn, role: "persona", content: reply };
+  let saveReply = await supabase.from("messages").insert({ ...personaRow, model: usedModel });
+  if (saveReply.error) {
+    // messages.model 컬럼을 아직 만들지 않았어도 대화는 저장되도록 모델 이름 없이 다시 저장합니다.
+    console.error("save persona message with model failed", saveReply.error.message);
+    saveReply = await supabase.from("messages").insert(personaRow);
+    if (saveReply.error) console.error("save persona message failed", saveReply.error.message);
+  }
 
   return NextResponse.json({
     reply,
